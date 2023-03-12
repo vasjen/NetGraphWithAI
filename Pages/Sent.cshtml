@@ -1,0 +1,111 @@
+@page
+@model NetGraphWithAI.Pages.SentModel
+@{
+    ViewData["Title"] = "ASP.NET Core and Microsoft Graph";
+}
+<link href="~/css/mail.css" rel="stylesheet">
+<link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+      }
+
+      .media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+      .scrollarea {
+    overflow-y: auto;
+  }
+      .b-example-divider {
+        height: 3rem;
+        background-color: rgba(0, 0, 0, .1);
+        border: solid rgba(0, 0, 0, .15);
+        border-width: 1px 0;
+        box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
+      }
+
+      .b-example-vr {
+        flex-shrink: 0;
+        width: 1.5rem;
+        height: 100vh;
+      }
+
+      .bi {
+        vertical-align: -.125em;
+        fill: currentColor;
+      }
+
+      .nav-scroller {
+        position: relative;
+        z-index: 2;
+        height: 2.75rem;
+        overflow-y: hidden;
+      }
+
+      .nav-scroller .nav {
+        display: flex;
+        flex-wrap: nowrap;
+        padding-bottom: 1rem;
+        margin-top: -1px;
+        overflow-x: auto;
+        text-align: center;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+      }
+    </style>
+     @if (User.Identity.IsAuthenticated)
+    {
+       <div class="container-fluid ">
+          <div class="row my-2">
+            <div class="col-lg-4 col-md-6">
+              <div class="card h-100">
+                <div class="card-header pb-0">
+                  <a href="/" class="d-flex align-items-center flex-shrink-0 p-3 link-dark text-decoration-none border-bottom">
+                     <svg width="24" height="24" class="svg-icon" viewBox="0 0 20 20">
+							<path d="M17.218,2.268L2.477,8.388C2.13,8.535,2.164,9.05,2.542,9.134L9.33,10.67l1.535,6.787c0.083,0.377,0.602,0.415,0.745,0.065l6.123-14.74C17.866,2.46,17.539,2.134,17.218,2.268 M3.92,8.641l11.772-4.89L9.535,9.909L3.92,8.641z M11.358,16.078l-1.268-5.613l6.157-6.157L11.358,16.078z"></path>
+						</svg>
+                              <span class="fs-5 fw-semibold">Inbox</span>
+                </a>
+                </div>
+                <div class="card-body p-3">
+                  <div class="list-group list-group-flush border-bottom scrollarea">
+                  @if (Model.Messages != null && Model.Messages.Any()) {
+                    @foreach(var message in Model.Messages) 
+                    {
+                      <div id="div_@message.Id" class="list-group-item list-group-item-action  py-3 lh-sm" aria-current="true">
+                          <div class="d-flex w-100 align-items-center justify-content-between">
+                            @if (message.Subject.Length > 0){
+                                <strong class="mb-1">@message.Subject</strong>
+                            }
+                            else {
+                                <strong class="mb-1">Empty title</strong>
+                            }
+                            <small>@message.ReceivedDateTime.GetValueOrDefault().UtcDateTime.DayOfWeek</small>
+                          </div>
+                      <div class="col-10 mb-1 small">@message.BodyPreview</div>
+                     </div>
+                      
+                    }
+                  }
+                  else {
+                      <div>No Messages found</div>
+                  }
+                  
+                    </div>
+                    
+                  </div>
+            </div>
+          </div>
+            </div>
+          </div>
+     }
+    else
+    {
+        <a class="btn btn-primary btn-large" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignIn">Click here to sign in</a>
+    }

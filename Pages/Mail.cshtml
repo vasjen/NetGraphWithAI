@@ -1,0 +1,200 @@
+@page "{id}"
+@model NetGraphWithAI.Pages.MailModel
+@{
+    ViewData["Title"] = "ASP.NET Core and Microsoft Graph";
+}
+<link href="~/css/mail.css" rel="stylesheet">
+<link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+      }
+
+      .media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+      .scrollarea {
+    overflow-y: auto;
+  }
+      .b-example-divider {
+        height: 3rem;
+        background-color: rgba(0, 0, 0, .1);
+        border: solid rgba(0, 0, 0, .15);
+        border-width: 1px 0;
+        box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
+      }
+
+      .b-example-vr {
+        flex-shrink: 0;
+        width: 1.5rem;
+        height: 100vh;
+      }
+
+      .bi {
+        vertical-align: -.125em;
+        fill: currentColor;
+      }
+
+      .nav-scroller {
+        position: relative;
+        z-index: 2;
+        height: 2.75rem;
+        overflow-y: hidden;
+      }
+
+      .nav-scroller .nav {
+        display: flex;
+        flex-wrap: nowrap;
+        padding-bottom: 1rem;
+        margin-top: -1px;
+        overflow-x: auto;
+        text-align: center;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+      }
+    </style>
+ 
+        @if (User.Identity.IsAuthenticated)
+    {
+        <div class="container-fluid scrollarea">
+          <div class="row my-2">
+            <div class="col-lg-4 col-md-6 scrollarea">
+              <div class="card h-100 scrollarea">
+                <div class="card-header pb-0 ">
+                  <a href="/" class="d-flex align-items-center flex-shrink-0 p-3 link-dark text-decoration-none border-bottom">
+                    <svg width="24" height="24" class="svg-icon" viewBox="0 0 20 20">
+						      	<path d="M17.388,4.751H2.613c-0.213,0-0.389,0.175-0.389,0.389v9.72c0,0.216,0.175,0.389,0.389,0.389h14.775c0.214,0,0.389-0.173,0.389-0.389v-9.72C17.776,4.926,17.602,4.751,17.388,4.751 M16.448,5.53L10,11.984L3.552,5.53H16.448zM3.002,6.081l3.921,3.925l-3.921,3.925V6.081z M3.56,14.471l3.914-3.916l2.253,2.253c0.153,0.153,0.395,0.153,0.548,0l2.253-2.253l3.913,3.916H3.56z M16.999,13.931l-3.921-3.925l3.921-3.925V13.931z"></path>
+						      </svg>
+                    <span class="fs-5 fw-semibold">Inbox</span>
+                </a>
+                </div>
+                <div class="card-body p-3 list-group list-group-flush border-bottom scrollarea">
+                  
+                  @if (Model.Messages != null && Model.Messages.Any()) {
+                    @foreach(var message in Model.Messages) 
+                    {
+                      <a asp-page="Mail" asp-route-id="@message.Id" id="div_@message.Id" class="list-group-item list-group-item-action  py-3 lh-sm" aria-current="true">
+                          <div class="d-flex w-100 align-items-center justify-content-between">
+                            @if (message.Subject.Length > 0){
+                                <strong class="mb-1">@message.Subject</strong>
+                            }
+                            else {
+                                <strong class="mb-1">Empty title</strong>
+                            }
+                            <small>@message.ReceivedDateTime.GetValueOrDefault().UtcDateTime.DayOfWeek</small>
+                          </div>
+                      <div class="col-10 mb-1 small">@message.BodyPreview</div>
+                     
+                      </a>
+                    }
+                  }
+                  else {
+                      <div>No Messages found</div>
+                  }
+                  
+                    
+                  </div>
+            </div>
+          </div>
+          @if (Model.Message != null){
+            <div class="col-lg-8 col-md-6 mb-md-0 mb-4" id="mail_form">
+          <div class="card ">
+            
+            <div class="card-body p-3">
+              <div class="message-details flex-wrap pb-3">
+                  <div class="message-headers d-flex flex-wrap">
+                    <div class="py-3 lh-sm w-100 fs-3 fw-semibold" id="mail_subject">@Model.Message.Subject</div>
+                    <div class="message-headers-from">
+                      <label id="mail_from" class=" py-1 lh-sm w-100 fs-7">@Model.Message.Sender.AdditionalData</label>
+                    </div>
+                    <div class="mail-headers-from-adress py-1 lh-sm w-100 fs-7">
+                      <label class="text-medium-emphasis" id="mail_from_adress">@Model.Message.Sender.EmailAddress</label>
+                    </div>
+                    <div class="mail-headers-date">
+                      <label class="text-medium-emphasis py-1 lh-sm w-100 fs-7 fst-italic" id="mail_date">@Model.Message.ReceivedDateTime.GetValueOrDefault().UtcDateTime</label>
+                    </div>
+                    
+                  </div>
+                  <hr>
+                  <div class="message-body">
+                     <blockquote id="message_text">@Model.Message.BodyPreview</blockquote>
+                     <p>
+                      <a class="btn btn-primary" id=@Model.Message.Id >Translate</a></p>
+                        <hr>
+                        <div id="grid_@Model.Message.Id"></div>
+                        <script>
+                            document.getElementById('@Model.Message.Id').addEventListener('click', () => {
+                                fetch('/api/ai/translate/?id=@Model.Message.Id')
+                                    .then((response) => {
+                                        return response.text();
+                                    })
+                                    .then((result) => {
+                                        document.getElementById('grid_@Model.Message.Id').innerHTML = result;
+                                    });
+                            });
+                        </script>
+                  </div>
+                  <hr>
+                  
+                  <hr>
+                  @if (Model.Message.HasAttachments == true){
+                    foreach (var item in Model.Attachments)
+                    {
+                     <div class="message-attachment"><b>@item.Name</b></div> 
+                     if (item.ContentType.Contains("audio"))
+                     {
+                      <p><button class="btn btn-primary" id=audio_@item.Id>To text</button></p>
+                                <div id="grid_audio_@item.Id"></div>
+                                 <script>
+                                document.getElementById('audio_@item.Id').addEventListener('click', () => {
+                                    fetch('/api/ai/convert', { headers: {
+                                        'message_id': '@Model.Message.Id',
+                                        'attachment_id': '@item.Id'
+                                    }
+                                    }
+                                    )
+                                        .then((response) => {
+                                            return response.text();
+                                        })
+                                        .then((result) => {
+                                            document.getElementById('grid_audio_@item.Id').innerHTML = result;
+                                        });
+                                });
+                            </script>
+                     }
+                    }
+                    
+                  }
+                  <form class="mt-3" method="post" action="">
+                    <div class="mb-3">
+                      <textarea class="form-control" id="message" name="body" rows="4 " placeholder="Click here to reply"></textarea>
+                    </div>
+                    <div class="mb-3">
+                      <button class="btn btn-success" tabindex="3" type="submit">Send message</button>
+                    </div>
+                  </form>
+                </div>
+            </div>
+          </div>
+        </div>
+          }
+          
+        
+        </div>
+        </div>
+            
+            
+    }
+    else
+    {
+        <a class="btn btn-primary btn-large" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignIn">Click here to sign in</a>
+    }
+   
+   
+        </div>
