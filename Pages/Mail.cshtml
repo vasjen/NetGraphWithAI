@@ -109,7 +109,12 @@
             <div class="card-body p-3">
               <div class="message-details flex-wrap pb-3">
                   <div class="message-headers d-flex flex-wrap">
+                    @if (@Model.Message.Subject.Length > 0 ){
                     <div class="py-3 lh-sm w-100 fs-3 fw-semibold" id="mail_subject">@Model.Message.Subject</div>
+                    }
+                    else {
+                      <div class="py-3 lh-sm w-100 fs-5 semibold" id="mail_subject">No subject</div>
+                    }
                     <div class="message-headers-from">
                       <label id="mail_from" class=" py-1 lh-sm w-100 fs-7">@Model.Message.Sender.AdditionalData</label>
                     </div>
@@ -140,10 +145,9 @@
                             });
                         </script>
                   </div>
-                  <hr>
-                  
-                  <hr>
+                 
                   @if (Model.Message.HasAttachments == true){
+                    <label>Attachments:</label>
                     foreach (var item in Model.Attachments)
                     {
                      <div class="message-attachment"><b>@item.Name</b></div> 
