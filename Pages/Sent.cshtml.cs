@@ -20,9 +20,8 @@ namespace NetGraphWithAI.Pages
         private readonly GraphEmailClient _graphEmailClient;
 
         [BindProperty(SupportsGet = true)]
-        public string NextLink { get; set; }
         public IEnumerable<Message> Messages  { get; private set; }
-        public string Translate {get;set;}
+        
 
         public SentModel(GraphEmailClient graphEmailClient)
         {

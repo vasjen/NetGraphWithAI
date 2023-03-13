@@ -1,5 +1,4 @@
 
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Graph;
 using Microsoft.Identity.Web;
@@ -12,7 +11,6 @@ namespace NetGraphWithAI.Pages
     {
         private readonly GraphServiceClient _graphServiceClient;
         private readonly IAIHelperService _helperService;
-
         
         public  Message Message  { get; private set; }
         public IEnumerable<Message> Messages  { get; private set; }
@@ -40,8 +38,6 @@ namespace NetGraphWithAI.Pages
                     var attachments = await  _graphServiceClient.Me.Messages[id].Attachments.Request().GetAsync();
                     Attachments = attachments;
                 }
-
-               
                 
             }
             catch  (Exception ex) {
@@ -49,5 +45,6 @@ namespace NetGraphWithAI.Pages
             }
           
         }
+       
     }
 }
