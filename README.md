@@ -23,17 +23,16 @@ I am confident that integrating a language model will significantly enhance the 
 
 1. Sign up for a **[Microsoft 365 Developer Program](https://aka.ms/m365developers)** subscription.
 2. Register application for user authentication ([How to do it](https://learn.microsoft.com/en-us/graph/tutorials/dotnet?tabs=aad&tutorial-step=1))
-3. Store ClientId, TenantId and Domain in appsetings.json
-4. Add credentials to secrets.json
+3. Add credentials to secrets.json
 
 ```sh
 dotnet user-secrets init
 dotnet user-secrets set "AzureAD:ClientId" "Your_Azure_AD_Client_Id"
 dotnet user-secrets set "AzureAD:ClientSecret" "Your_Azure_AD_Client_Secret"
 ```
-5. Visit [personal account OpenAI](https://platform.openai.com/account/api-keys) to create and get your secret Key
-6. Store this key in secrets.json of project
+4. Visit [personal account OpenAI](https://platform.openai.com/account/api-keys) to create and get your secret Key
+5. Store this key in secrets.json of project
 ```sh
 dotnet user-secrets set "OpenAIAPI" "Your_OPENAI_Secret"
 ```
-7. Run application
+6. Run application
